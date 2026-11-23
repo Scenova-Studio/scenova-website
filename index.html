@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#09090f">
@@ -105,14 +104,14 @@ footer strong{color:#b9a1ff}
  </div>
 </div>
 <div id="notice"></div>
-<script type="module">
-  const sdk = "https://gstatic.com" + "firebasejs/10.7.1/";
+<script type=<"module">
+  const sdk = "https://www.gstatic.com" + "firebasejs/10.7.1/";
   const { initializeApp } = await import(sdk + "firebase-app.js");
   const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } = await import(sdk + "firebase-auth.js");
 
   const app = initializeApp({
     apiKey: "AIzaSyAwOSj_knNchw39a7wh3GtoBxrCwcxWg_0",
-    authDomain: "://firebaseapp.com",
+    authDomain: "scenova-ba132.firebaseapp.com",
     projectId: "scenova-ba132",
     storageBucket: "scenova-ba132.firebasestorage.app",
     messagingSenderId: "102039074040",
@@ -128,3 +127,34 @@ footer strong{color:#b9a1ff}
     isSignUp = !isSignUp;
     document.getElementById('modalTitle').textContent = isSignUp ? 'Create Account' : 'Sign In';
     document.getElementById('modalSub').textContent = isSignUp ? 'Join the Scenova Creative Universe' : 'Welcome back to Scenova Universe';
+    document.getElementById('modalTitle').textContent = isSignUp ? 'Create Account' : 'Sign In';
+    document.getElementById('modalSub').textContent = isSignUp ? 'Join the Scenova Creative Universe' : 'Welcome back to Scenova Universe';
+    document.getElementById('authSubmitBtn').textContent = isSignUp ? 'Create Account' : 'Sign In';
+    document.getElementById('authSwitchText').innerHTML = isSignUp ? 'Already have an account? <span onclick="toggleAuthMode()">Sign In</span>' : 'Don\'t have an account? <span onclick="toggleAuthMode()">Sign Up</span>';
+  };
+
+  window.handleAuth = async () => {
+    const e = document.getElementById('authEmail').value.trim(), p = document.getElementById('authPass').value.trim(), b = document.getElementById('authSubmitBtn');
+    if (!e || p.length < 6) return showNotice("সঠিক ইমেইল এবং কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।");
+    b.disabled = true; b.textContent = "Please wait...";
+    try {
+      if (isSignUp) { await createUserWithEmailAndPassword(auth, e, p); showNotice("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!"); }
+      else { await signInWithEmailAndPassword(auth, e, p); showNotice("সফলভাবে লগইন হয়েছে!"); }
+      closeAuthModal(); document.getElementById('authEmail').value = ''; document.getElementById('authPass').value = '';
+    } catch (err) { showNotice("ত্রুটি: " + err.message); }
+    finally { b.disabled = false; b.textContent = isSignUp ? 'Create Account' : 'Sign In'; }
+  };
+
+  onAuthStateChanged(auth, (u) => {
+    currentUser = u; const b = document.getElementById('authBtn');
+    b.textContent = u ? "Sign Out" : "Sign In"; b.classList.toggle('logout', !!u);
+  });
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    const v = e.target.value.toLowerCase(); let c = 0;
+    document.querySelectorAll('.card').forEach(el => { const ok = el.dataset.name.includes(v); el.style.display = ok ? 'block' : 'none'; if (ok) c++; });
+    document.getElementById('empty').style.display = c ? 'none' : 'block';
+  });
+</script>
+</body>
+</html>
